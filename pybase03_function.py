@@ -251,16 +251,88 @@ message = 'ab4690cfvg342가1나1다0'
 print(list(filter(lambda n:n.isdigit(), message)))
 
 
+## map, filter 
+# map(람다식|함수명, 리스트)
+# 람다식, 함수:개별 데이터 가공해서 결과값 반환
+# 입력 리스트 길이와 출력 리스트 길이가 같다
+# 리스트의 제곱을 구해서 새로운 리스트로 만들기
+numList2 = [1, 2, 3, 4]
+
+# 제곱을 구하는 함수 정의 : 일반 함수 스타일
+def power_fn1(myList):
+    res = []
+    for i in myList:
+        res.append(i**2)
+    return res
+print(power_fn1(numList2))
 
 
 
 
 
+        
+# map() 사용할 제곱을 출력하는 함수 정의
+def power_f2(value):
+    return value**2
+
+print(power_f2(3))
+print(map(power_f2, numList2))
+print(list(map(power_f2, numList2)))
 
 
+#lambda 함수 이용
+f_multi = lambda n : n**2
+print(f_multi(2))
+print(list(map(lambda n : n**2, numList2)))
 
 
+# 두 리스트에서 인덱스가 같은 값을 서로 곱한 후 리스트로 만들기
+list1 = [2, 3, 7]
+list2 = [4, 5, 9]
+# 연산 x, join의 의미, 여러 리스트를 하나의 리스트로 병합
+print(list1 + list2) 
+print()
+# 일반 함수
+def multyply_n(list1, list2):  #(collection, collection)
+    resList = []
+    for i in range(0, len(list1)):
+        resList.append(list1[i]*list2[i])
+    return resList
 
+print(f'{list1}\n{list2}, \n일반 함수 => {multyply_n(list1, list2)}')
+
+
+# map 적용 함수 
+def map_multi(x, y):
+    return x*y
+# map 함수이용 계산
+print(f'{list1}\n{list2}, \n map 함수=> {list(map(map_multi, list1, list2))}')
+
+#map lambda 함수 적용
+print('map(), lambda 함수', list(map(lambda x,y:x*y, list1, list2)))
+
+'''
+4개의 리스트 각 아이템 요소가 '-'로 연결되어 출력되도록 하여라
+최종 결과는 리스트로 저장되어야 하며 map() 함수를 활용한다
+'''
+
+num_list = [100, 200, 300, 400]
+name_list = ['길동', '동미', '미영', '영철']
+gender_list = ['남','여','여','남']
+address_list = ['서울','대전','부산','대구']
+
+#['100-길동-남-서울', '200-동미-여-대전', '300-미영-여-부산', '400-영철-남-대구']
+
+# map 적용 함수
+def map_pair(a,b,c,d):
+    return f'{a}-{b}-{c}-{d}'
+
+print(list(map(map_pair,num_list, name_list, gender_list, address_list)))    
+
+
+# map, lambda 
+print(list(map(lambda a,b,c,d : f'{a}-{b}-{c}-{d}',
+               num_list, name_list, gender_list, address_list))) 
 
 
 
