@@ -15,6 +15,15 @@ Created on Mon Aug 28 15:17:40 2023
     a :쓰기. 기존의 파일의 내용에 추가
     t : text 모드. 기본값
     b : 이진모드. binary모드. 이미지,동영상....   
+    
+    
+    파일 : open(파일명,모드,[encoding])
+         os.getcwd() : 작업폴더 조회
+         os.chdir()  : 작업폴더 변경
+         os.path.isfile(file) : 파일?
+         os.path.isdir(file)  : 폴더?
+         os.listdir()  : 폴더의 하위 파일 목록 조회 
+    
 '''
 #파일 읽기
 infp = open("C:\\Users\\KITCOOP\\python2308\\pybase07_re.py", "rt", encoding="UTF-8")
@@ -75,6 +84,150 @@ while True:
     outfp.write(indata)
 infp.close()
 outfp.close()
+
+
+# 문제:score.txt 파일을 읽어서 점수의 총점과 평균 구하기
+#
+#  score.txt 내용
+#  홍길동,100
+#  김삿갓,50
+#  이몽룡,90
+#  임꺽정,80
+
+import re
+infp = open("data/score.txt",'r',encoding="UTF-8")
+data = infp.read()
+print(data)
+#\\d+  :  숫자1개이상
+#\\d{1,3} : 숫자 1개이상3개 이하
+pattern = re.compile("\\d+") #숫자1개이상
+#pattern = re.compile("\\d{1,3}") #숫자1개이상 3개이상
+#data에서 숫자들 찾아서 리스트 리턴
+scorelist = re.findall(pattern,data)
+print(scorelist)
+#요소의 자료형 int형으로 변환
+scorelist = list(map(int,scorelist))
+print(scorelist)
+print("총합:",sum(scorelist),\
+      ",평균:",sum(scorelist)/len(scorelist))
+    
+    
+    
+    
+import os
+#현재 작업 폴더 위치 조회
+print(os.getcwd())    
+#작업 폴더의 위치 변경
+os.chdir("c:/Users/KITCOOP")
+print(os.getcwd())   
+
+os.chdir("c:/Users/KITCOOP/python2308")
+print(os.getcwd())   
+#파일의 정보 조회
+import os.path
+file = os.getcwd()
+file
+
+if os.path.isfile(file) :
+    print(file,"은 파일입니다.")
+elif os.path.isdir(file) :    
+    print(file,"은 폴더입니다.")
+
+if os.path.exists(file) :    
+    print(file,"은 존재합니다.")
+else :    
+    print(file,"은 없습니다.")
+    
+#문제 : 작업파일의 하위파일목록 출력하기
+# 파일인 경우 : 파일의 크기 os.path.getsize(파일명)
+# 폴더인 경우 : 하위파일의 갯수
+# 작업폴더의 하위파일갯수 
+
+print(os.listdir())
+file="data/data.txt"
+os.path.exists(file) #존재?
+
+len(os.listdir())   # 폴더 아래에 있는 파일을 (폴더 포함) 보여준다
+#현재 작업폴더
+cwd = os.getcwd();
+cwd
+for f in os.listdir() :
+    if os.path.isfile(f) :
+        print(f,":파일, 크기:",os.path.getsize(f))
+    elif os.path.isdir(f) :
+        os.chdir(f)
+        print(f,":폴더, 하위파일의갯수:",len(os.listdir()))
+        os.chdir(cwd)
+
+print(os.getcwd()) 
+#폴더 생성
+os.mkdir("temp") #temp 폴더 생성
+#폴더 제거
+os.rmdir("temp") #temp 폴더 제거
+
+#######엑셀 파일 읽기
+import openpyxl 
+'''
+   xlsx : openpyxl  모듈사용
+   xls  : xlrd 모듈로 읽기
+          xlwd 모듈로 쓰기
+'''
+
+filename = "data/sales_2015.xlsx"
+#엑셀파일 전체 
+book = openpyxl.load_workbook(filename)
+# 첫번째 sheet
+sheet = book.worksheets[0]
+
+data=[]
+for row in sheet.rows :
+    line = []
+    #print(row)
+    #enumerate(row) : 목록에서 
+    #                 l : 인덱스
+    #                 d : 데이터. 셀의값
+    for l,d in enumerate(row) :
+        line.append(d.value) #셀의내용을 line 추가
+#    print(line) #한 줄의 셀의 리스트
+    data.append(line)
+print(data)
+
+#xls 형식의 엑셀파일 읽기
+#pip install xlrd
+import xlrd 
+infile = "data/ssec1804.xls"
+#workbook : 엑셀파일 전체 데이터
+workbook = xlrd.open_workbook(infile)
+#workbook.nsheets : sheet의 갯수
+print("sheet 의 갯수",workbook.nsheets) #26
+
+for worksheet in workbook.sheets() :
+    #worksheet : 한개의 sheet 데이터
+    print("worksheet 이름:",worksheet.name)
+    print("행의 수:",worksheet.nrows)
+    print("컬럼의 수:",worksheet.ncols)
+    #worksheet.nrows : 행의 수
+    #worksheet.ncols : 컬럼의 수
+    
+    for row_index in range(worksheet.nrows) : 
+        for column_index in range(worksheet.ncols) :
+            print(worksheet.cell_value(row_index,column_index),",",end="")
+        print()   
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
