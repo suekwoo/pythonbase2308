@@ -6,11 +6,37 @@ Created on Tue Aug 29 11:44:43 2023
 """
 
 '''
-   pandas : 표형태의 데이터 저장 모듈.
-     Series : 1차원형태의 데이터
-     DataFrame : 2차원 형태(행,열)의 데이터. 
-                 Series 데이터의 모임.
+
+pandas 모듈
+ - 표형태(행:index,열:columns)의 데이터를 처리하기 위한 모듈
+ - Series : 1차원형태의 데이터처리. DataFrame의 한개의 컬럼값들의 자료형
+ - DataFrame : 표형태의 데이터처리. Series데이터의 모임.
+     - 기술통계함수 : sum,mean,median,max,min,std,var,describe
+     - 행의 값 : index
+     - 열의 값 : columns
+     - rename : index,columns의 값을 변경 함수 inplace=True : 객체자체변경
+     - drop   : index,columns의 값을 제거 함수 inplace=True : 객체자체변경
+     - 얕은복사 : df2 = df, df,df2객체는 물리적으로 같은 객체 
+     - 깊은복사 : df3=df[:], df4=df.copy()
+     
+     - 한개의 컬럼조회 : df["컬럼명"], df.컬럼명 => Series 객체
+     - 여러개의 컬럼조회 : df[["컬럼1","컬럼2"]] => DataFrame 객체
+                          df["row1":"rown"] =>  DataFrame 객체. 범위지정
+     - 행을 조회 : loc["인덱스명"], iloc[인덱스순서]                     
+     - 컬럼 => 인덱스 : set_index
+     - 인덱스 => 컬럼 : reset_index
+     - csv 파일 읽기 : read_csv                     
+     - csv 파일 쓰기 : to_csv                     
+     - excel 파일 읽기 : read_excel
+     - excel 파일 쓰기 : ExcelWriter > to_excel > save
+     - reindex([], fill_value=0) 함수 : 인덱스 재설정. 행의 추가.
+     - sort_index(ascending=False)  : 인덱스명으로 정렬
+     - sort_values() : 기준컬럼의 값으로 정렬
+    
+     
+     
 '''
+
 import pandas as pd
 
 
@@ -396,20 +422,91 @@ for name,data in df.items() :
     
 print(dfall)  #전체 자료 합침  
 
+#조건에 의한 조회
+
+
+#Sale Amount 컬럼의 값이 500보다 큰 레코드만 조회
+dfall[dfall["Sale Amount"] > 500]
+dfall.loc[dfall["Sale Amount"] > 500]
+
+dfall["Sale Amount"] > 500 #True, False 값들
+
+#Sale Amount가 500보다 레코드만 df500 데이터에 저장
+df500 = dfall[dfall["Sale Amount"] > 500]
+df500 #DataFrame 객체
+
+
+
+
+#df500데이터를 pd_sale_2015.xlsx 파일의
+# 2015_500 sheet로 저장하기
+
+#내용 없는 파일
+outexcel = pd.ExcelWriter("data/pd_sale_2015.xlsx")
+
+df500.to_excel(outexcel, sheet_name="2015_500", index=False)
+dfall.to_excel(outexcel, sheet_name="2015", index=False)
+outexcel.save()
+
+#매입일자가 2015-03-17일 정보만 조회하기
+df0317 = dfall[dfall["Purchase Date"] == '2015-03-17']
+df0317
 
 
 
 
 
+dict_data = {'c0':[1,2,3], 'c1':[4,5,6], 'c2':[7,8,9], \
+             'c3':[10,11,12], 'c4':[13,14,15]}
+df = pd.DataFrame(dict_data, index=['r0', 'r1', 'r2'])
+df
+
+#인덱스 r0,r1,r2,r3,r4 증가
+#df.index=['r0','r1','r2','r3','r4'] #오류 발생. 행의 갯수틀림
+#reindex() 함수 : 인덱스 재설정. 행의 추가.
+ndf = df.reindex(['r0','r1','r2','r3','r4'])
+ndf
+#NaN :결측값. (값이없다)
+#fill_value=0 : 추가된 내용에 0 값으로 채움
+ndf2 = df.reindex(['r0','r1','r2','r3','r4'],fill_value=0)
+ndf2
 
 
 
 
+#sort_index()  : 인덱스명으로 정렬
+#sort_values() : 기준컬럼의 값으로 정렬
+print(df.sort_index()) #인덱스명으로 오름차순정렬
+print(df.sort_index(ascending=False)) #인덱스명으로 내림차순정렬
+print(ndf2.sort_index(ascending=False)) #인덱스명으로 내림차순정렬
+#c1 컬럼의 값을 기준으로 내림차순정렬
+print(df.sort_values(by="c1",ascending=False))   
 
 
-
-
-
+exam_data={"이름":["서준","우현","인아"],
+           "수학":[90,80,70],
+           "영어":[98,89,95],
+           "음악":[85,95,100],
+           "체육":[100,90,90]}
+df=pd.DataFrame(exam_data)
+df
+#1. 이름 컬럼을 인덱스 설정하기
+df.set_index("이름",inplace=True)  #이름 컬럼을 인덱스로 수정
+df
+#이름의 역순으로 정렬하기
+df.sort_index(ascending=False,inplace=True)
+df
+#영어점수의 역순으로 정렬하기
+df.info()
+df.sort_values(by="영어",ascending=False,inplace=True)
+df
+df.sort_values(by="음악",ascending=False,inplace=True)
+df
+#총점 컬럼 생성하여, 총점의 역순으로 출력하기
+df["총점"]=df["수학"]+df["영어"]+df["음악"]+df["체육"]
+df
+df.sort_values(by="총점",ascending=False,inplace=True)
+df
 
 
 
