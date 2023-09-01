@@ -4,6 +4,68 @@ Created on Thu Aug 31 12:37:20 2023
 
 @author: KITCOOP
 """
+'''
+numpy 기본 함수
+  np.arange(15) : 0 ~ 14까지의 숫자를 1차원 배열로 생성
+  arr.reshape(3,5) : 3행5열의 2차원배열로 생성.  배열 갯수가 맞아야 함.
+  arr.dtype : 배열 요소의 자료형
+  arr.shape :배열 구조 행열값
+  arr.ndim  : 배열의 차수
+  arr.itemsize : 요소의 바이트 크기
+  arr.size : 요소의 갯수
+  np.zeros((행,열)) : 요소의 값이 0인 배열 생성
+  np.ones((행,열)) : 요소의 값이 1인 배열 생성
+                 np.ones(10,dtype=int)
+  np.eye(10,10) #10행10열 단위 행렬
+  np.linspace(시작값,종료값,갯수) : 시작값부터 종료값까지 갯수만큼 균등분할하는 수치
+  np.pi : 원주율 상수
+
+난수 관련 함수
+   np.random.random() : 난수 발생
+   np.random.default_rng(1) : seed 값 설정
+   np.random.randint: 정수형 난수 리턴. 
+   np.random.normal(평균,표준편차,데이터갯수) : 정규 분포 난수 생성
+   np.random.choice(값의범위,선택갯수,재선택여부)
+   np.random.choice(값의범위,선택갯수,확률)
+
+통계 관련 함수
+   sum,min,max,mean,std
+   max(axis=1) : 행중 최대값
+   max(axis=0) : 열중 최대값
+   cumsum(axis=1) : 행의 누적 합계
+   cumsum(axis=0) : 열의 누적 합계
+   argmax(axis=1) : 행 중 최대값의 인덱스
+   argmax(axis=0) : 열 중 최대값의 인덱스
+   argmin(axis=1) : 행 중 최소값의 인덱스
+   argmin(axis=0) : 열 중 최소값의 인덱스
+   
+ np.fromfunction() : 함수를 이용하여 요소의 값 설정
+ arr.flat:배열의 요소들만 리턴
+ np.floor: 작은 근사정수
+ np.ceil : 큰 근사정수
+ 
+ arr.ravel() #1차원배열로 변경
+ arr.resize() : 배열 객체 자체를 변경
+2개의 배열을 합하기
+   np.vstack((i,j)) #행기준 합. 열의 갯수가 같아야 함
+   np.hstack((i,j)) #열기준 합. 행의 갯수가 같아야 함.
+
+배열 나누기
+   np.hsplit(k,3) #3개로 열을 분리. 
+   np.vsplit(k,2) #2개로 행을 분리. 
+
+
+
+
+
+
+'''
+
+
+
+
+
+
 
 ## numpy :행렬, 통계관련기본함수,배열 기능 제공하는 모듈
 import numpy as np
@@ -297,5 +359,163 @@ h2=h.reshape(6,2) #h배열이 변경되지 않음.
 h2.shape
 h.shape
 #h배열 자체를 6행2열의 배열로 변경하기
-h.resize(6,2)
+h.resize(6,2)  #원본 수정
 h.shape
+h
+
+
+#h배열을 3행5열로 변경
+h.reshape(3,5) #오류. h배열의 요소의 갯수가 12. 3행5열:15개
+h.reshape(3,4) #원본 수정 않됨
+h.shape
+h
+#3행을 지정. 열을 자동 맞춤
+h.reshape(3,-1) #-1을 지정하면 자동으로 맞춤.
+h.reshape(4,-1).shape #-1을 지정하면 자동으로 맞춤.
+h.reshape(-1,4).shape
+
+np.eye(10,10) #단위 행렬
+
+
+
+#0~9사이의 정수형 난수값을 가진 2행2열 배열 생성
+#randint: 정수형 난수 리턴. 
+i=np.random.randint(10,size=(2,2))
+i
+j=np.random.randint(10,size=(2,2))
+j
+
+#2개의 배열을 합하기
+np.vstack((i,j)) #행기준 합. 열의 갯수가 같아야 함
+np.hstack((i,j)) #열기준 합. 행의 갯수가 같아야 함.
+#배열 나누기
+k = np.random.randint(10,size=(2,12))
+k
+np.hsplit(k,3) #3개로 열을 분리. 
+np.vsplit(k,2) #2개로 행을 분리. 
+k.shape
+#k배열의 모든 요소값을 100으로 변경하기
+#k=100. k변수에 100 정수값을 저장. k값은 배열이 아님.
+k.shape
+k[0,0]=100
+k[0,:]=100
+k[:]=100
+k[:,:]=200
+k
+
+#0~19사이의 임의의 정수를 가진 5행 4열 배열 l을 생성하기
+l = np.random.randint(20,size=(5,4))
+l
+l.max()
+#각 행의 최대값들을 조회하기
+l.max(axis=1)
+#각 열의 최대값들을 조회하기
+l.max(axis=0)
+
+#각 행의 최대값의 인덱스들 조회하기
+l.argmax(axis=1)
+#각 열의 최대값의 인덱스들 조회하기
+l.argmax(axis=0)
+
+#각 행의 최소값의 인덱스들 조회하기
+l.argmin(axis=1)
+#각 열의 최소값의 인덱스들 조회하기
+l.argmin(axis=0)
+#단위행렬 : 대각선(행==열) 셀의 값이 1인 배열
+m=np.eye(10,10) #10행10열 단위 행렬
+m
+
+np.nonzero(m)
+n=[1,2,0,4,0] #리스트
+type(n)
+np.nonzero(n) #요소의 값이 0이아닌 요소의 인덱스 리턴
+
+#정규분포값을 가진 임의의 수 10000개를 가진 배열
+#np.random.normal : 정규분포에 맞는 난수 발생 함수
+# (0,1,10000) => (평균,표준편차,데이터갯수)
+#                 평균이 0, 표준편차가 1인 난수들
+o = np.random.normal(0,1,10000)
+o
+o.shape
+
+o.mean()
+o.std()
+
+
+#정규분포 확인 : 히스토그램을 이용하여 확인
+import matplotlib.pyplot as plt
+plt.rcParams['axes.unicode_minus']=False #음수표시 -설정
+plt.hist(o,bins=100)
+
+#평균:2, 표준편차:2 인 난수 10000개를 생성.
+p = np.random.normal(2,2,10000)
+p
+p.mean()
+p.std()
+plt.hist(p,bins=100)
+
+
+#choice 함수 : 값을 선택.
+#    choice(값의범위,선택갯수,재선택여부)
+#    choice(값의범위,선택갯수,확률)
+#(10,5,replace=False)
+# 10 : 0~ 9사이의 값
+# 5 : 5개 선택
+# replace=True|False : 중복가능|중복불가
+q=np.random.choice(10,5,replace=True)
+q
+
+#1~45사이의 수를 중복없이 6개를 선택한 r배열 생성
+r = np.random.choice(45,6,replace=False) + 1
+r
+#정렬
+r.sort()
+r
+
+#0~3사이의 수를 중복없이 5개 선택.
+#오류. 중복되어야 함
+s=np.random.choice(4,5,replace=False)  #오류. 불가능선택
+s=np.random.choice(4,5,replace=True)
+s
+#확률 적용 선택
+#choice(값의범위,선택갯수,확률)
+# p=[0.1,0.2,0.3,0.2,0.1,0.1] 
+# p의 전체 합: 1 
+p=[0.1,0.2,0.3,0.2,0.1,0.1] 
+sum(p)
+
+'''
+  선택수  확률    100개 선택시 추정갯수
+    0     0.1     10  
+    1     0.2     20  
+    2     0.3     30
+    3     0.2     20
+    4     0.1     10
+    5     0.1     10
+'''
+t=np.random.choice(6,100,p=[0.1,0.2,0.3,0.2,0.1,0.1])
+t
+listt=list(t) # 리스트 <= 배열
+listt.count(0) #9
+listt.count(1) #18
+listt.count(2) #30
+listt.count(3) #19
+listt.count(4) #12
+listt.count(5) #12
+
+#0~3사이의 수를 중복없이 5개 선택.
+#오류. 중복되어야 함
+s=np.random.choice(4,5,replace=False)  #오류. 불가능선택
+s=np.random.choice(4,5,replace=True)
+s
+
+fruits = ["apple","banana","cherries","durian","grapes"]
+u=np.random.choice(fruits,100,p=[0.1,0.2,0.3,0.2,0.2])
+u
+listu = list(u)
+for d in fruits :
+    print(d,"=",listu.count(d))
+
+import pandas as  pd
+sr = pd.Series(u)
+sr.value_counts()
