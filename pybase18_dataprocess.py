@@ -72,15 +72,48 @@ chipo_51 = chipo.groupby("order_id")\
 chipo_51.info()
 
 #ex06) item_name 별 단가를 조회하기
-price_one = chipo.groupby("item_name").min()["item_price"]
+price_one = chipo.groupby("item_name")["item_price"]
 price_one
+type(price_one)  #pandas.core.groupby.generic.SeriesGroupBy
+len(price_one)   
 
-
+for key, item in price_one :
+    print (key, "=", len(item))
+    print(item)
     
+price_min = chipo.groupby("item_name").min()["item_price"]
+price_min
+
+#ex07) 단가의 분포를 히스토그램으로 출력하기
+import matplotlib.pyplot as plt
+plt.rc("font", family="Malgun Gothic")
+plt.hist(price_min)
+plt.ylabel("상품갯수")
+plt.title("상품단가 분포")
+
+price_min.plot(kind = "hist")
+plt.ylabel("상품갯수")
+plt.title("상품단가 분포")
 
 
+#ex08) 주문당 금액이 가장 높은 5건의 주문 총수량을 조회하기
+price5 = chipo.groupby("order_id").sum()\
+              .sort_values(by="item_price", ascending=False)[:5]
+price5        
+price5.index
 
+#ex09) 주문당 금액이 가장 높은 5건의 주문 정보 조회하기
+chipo_5 = chipo[chipo["order_id"].isin(price5.index)]\
+            [["order_id", "item_name", "quantity", "item_price"]]
+chipo_5
 
+#ex10) Chicken Bowl 몇번 주문되었는지 출력하기
+chipo_chicken = chipo[chipo["item_name"]=='Chicken Bowl']
+len(chipo_chicken)  #726
+len(chipo_chicken.groupby("order_id"))  #615
+
+chipo_chicken = chipo_chicken.drop_duplicates(['item_name', 'order_id'])
+len(chipo_chicken)  #615
 
 
 
