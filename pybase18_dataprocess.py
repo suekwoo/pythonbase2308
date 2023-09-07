@@ -376,9 +376,115 @@ police_state = pd.read_csv('data/경찰관서 위치.csv', encoding='cp949')
 police_state.info()
 
 
+#1. 서울지역 경찰서 위치데이터만 저장
+
+police_state.head()
+police_Seoul = police_state[police_state["지방청"]=="서울청"]
+police_Seoul
+
+#police_Seoul 데이터의 경찰서 컬럼의 내용을 '서울중부'--> '중부서' 이름변경하여
+# 관서명 컬럼으로 생성하기
+police_Seoul["관서명"]=police_Seoul["경찰서"].str[2:]+"서"
+police_Seoul
+
+# police_Seoul 데이터에 지방청, 경찰서,구분 컬럼 제거하기
+del police_Seoul["지방청"],police_Seoul["경찰서"],police_Seoul["구분"]
+police_Seoul.info()
 
 
+# police_Seoul["관서명"] 중복행을 제거하기
+police_Seoul = police_Seoul.drop_duplicates(subset=["관서명"])
+police_Seoul
+police_Seoul.info()
+
+# police_Seoul 데이터의 주소 컬럼을 이용하여 구별 컬럼을 생성하기
+police_Seoul["구별"]=police_Seoul["주소"].str.split().str[1]
+
+# police_Seoul 데이터의 주소 컬럼제거하기
+del police_Seoul["주소"]
+police_Seoul.info()
+
+# 관서명 컬럼을 연결컬럼으로 crime_Seoul 데이터와 police_Seoul 데이터를 병합하기 
+# data_result 데이터에 저장하기
+data_result=pd.merge(crime_Seoul,police_Seoul, on="관서명")
+data_result.head()
+
+#구별 범죄의 합계를 출력하기
+crime_sum =data_result.groupby("구별").sum()
+crime_sum 
+
+#범죄 종류(강간,강도,살인,절도,폭력)별 검거율 컬럼 추가하기
+# 검거율 = 검거/발생 * 100
+col_list = ['강간', '강도', '살인', '절도', '폭력']
+for col in col_list:
+    crime_sum[col+"검거율"] =\
+        crime_sum[col+" 검거"]/crime_sum[col+" 발생"]*100
+
+crime_sum.info()
+
+crime_sum
 
 
+#검거율 데이터 중 100보다 큰값은 100으로 변경하기
 
+for col in col_list:
+    crime_sum.loc[crime_sum[col+"검거율"]>=100, col+"검거율"]=100
 
+# df.loc(조건문, column명)
+for col in col_list:
+    print(crime_sum.loc[crime_sum[col+"검거율"]>100, col+"검거율"])
+crime_sum
+
+# 구별 검거율과, CCTV 갯수를 산점도와 회귀선으로 출력하기.
+# 오차가 큰 10개 구이름을 그래프로 출력하기
+#crime_sum 인덱스를 구별 컬럼으로 변경하기
+crime_sum = crime_sum.reset_index()
+crime_sum
+crime_sum.index
+crime_sum.info()
+crime_sum
+
+#구별 컬럼으로 CCTV_Seoul,crime_sum 데이터를 병합하여 data_result에 저장하기
+CCTV_Seoul.info()
+
+#기관명 컬럼을 구별 컬럼명 변경
+CCTV_Seoul.rename(columns={"기관명":"구별"},inplace=True)
+CCTV_Seoul.drop\
+    (["2013년도 이전","2014년","2015년","2016년"],axis=1,inplace=True)
+    
+CCTV_Seoul
+
+#cctv데이터+crime 데이터를 구별로 병합    
+data_result = pd.merge(CCTV_Seoul,crime_sum, on="구별")
+data_result.info()
+   
+#절도검거율과cctv 회귀선과 산점도 출력하기
+#회기선 구하기 (x, y, 차수)
+fp1 = np.polyfit(data_result['소계'], data_result['절도검거율'], 2) 
+f1=np.poly1d(fp1) #회귀선을 위한 함수
+fx=np.linspace(500,4000,100)   
+
+#data_result 데이터에 오차 컬럼을 추가하기
+# 실제 검거율과 기대검거율의 차이의 절대값 저장
+data_result["오차"]=np.abs(data_result["절도검거율"]-f1(data_result['소계']))
+#오차의 내림차순으로 정렬하여 df_sort 데이터 저장
+df_sort = data_result.sort_values(by="오차", ascending=False)
+df_sort 
+    
+import matplotlib.pyplot as plt 
+plt.rc('font', family ='Malgun Gothic')
+plt.figure(figsize=(14,10))
+plt.scatter(df_sort['소계'],df_sort["절도검거율"],c=df_sort['오차'], s=50)
+plt.plot(fx, f1(fx), ls='dashed', lw=3, color='g')    
+
+for n in range(10):
+    plt.text(df_sort.iloc[n,]["소계"]*1.001,  #x축값
+             df_sort.iloc[n,]['절도검거율']*0.999, #y축값
+             df_sort.iloc[n,]['구별'], fontsize=10)
+plt.xlabel('CCTV 갯수')
+plt.ylabel('절도범죄 검거율')
+plt.title("CCTV와 절도 검거율 분석")
+plt.colorbar()
+plt.grid()
+plt.show() 
+    
