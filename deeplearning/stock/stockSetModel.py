@@ -33,27 +33,6 @@ BTC/KRW (비트코인 원화 가격, 빗썸)
 주가 분석 project
 1) pip install -U finance-datareader   : ok
     Successfully installed finance-datareader-0.9.50
-2) pip install tensorflow
-   Successfully installed 
-   astunparse-1.6.3 
-   cachetools-5.3.1 
-   gast-0.4.0 
-   google-auth-2.22.0 
-   google-auth-oauthlib-1.0.0 
-   google-pasta-0.2.0 
-   grpcio-1.57.0 keras-2.13.1 
-   libclang-16.0.6 oauthlib-3.2.2 
-   opt-einsum-3.3.0 requests-oauthlib-1.3.1 
-   rsa-4.9 tensorboard-2.13.0 
-   tensorboard-data-server-0.7.1 
-   tensorflow-2.13.0 tensorflow-estimator-2.13.0 
-   tensorflow-intel-2.13.0 
-   tensorflow-io-gcs-filesystem-0.31.0 termcolor-2.3.0
-
-
-
-
-
 '''
 
 import FinanceDataReader as fdr
@@ -63,21 +42,35 @@ import pandas as pd
 #from stockmodule  import MinMaxScaler
 fdr.__version__
 
+# 1. 데이터 수집
+# 거래소 상장종목 
+df_nas = fdr.StockListing('NASDAQ')
+df_nas.head()
+len(df_nas)
 
+df_krx = fdr.StockListing('KOSPI')
+df_krx.head()
+len(df_krx)
+# df = fdr.DataReader('종목코드', '시작일', '종료일')
+# df = fdr.DataReader('종목코드', '시작일')  이후 전체
+# df = fdr.DataReader('005930', '2022')  #년도별 자료 수집 가능
 
+start='2022-01-01'
+end='2023-07-31'
 
+df = fdr.DataReader('005930', start, end)  #삼성
 
+df.info()
+df.head()
+df.shape   #(390, 6)
 
-
-
-
-
-
-
-
-
-
-
+'''
+10일간의 데이터를 가지고 종가를 예측한다는 것은 이런 의미입니다.
+6월 1일 ~ 6월 10일까지의 OHLV 데이터로 
+6월 11일 종가 예측 
+6월 2일 ~ 6월 11일까지의 OHLV 데이터로 
+6월 12일 종가 예측
+'''
 
 
 
